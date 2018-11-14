@@ -29,7 +29,14 @@ app.get('/', function(request, response) {
   response.send('Hello Express');
 });
 
-// listen for requests :)
+app.get('/now', function(req, res, next) {
+req.time = new Date().toString(); // Hypothetical synchronous operation
+next();
+}, function(req, res) {
+res.send({time: req.time});
+});
+
+
 // listen for requests :)
 const listener = app.listen(port, function() {
   console.log('Your app is listening on port ' + port);
