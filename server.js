@@ -1,9 +1,13 @@
 // server.js
 // where your node app starts
 var myApp = require('./myApp');
+var bGround = require('./preload/index');
 // init project
 const express = require('express');
 const app = express();
+
+
+
 
 if (!process.env.DISABLE_XORIGIN) {
   app.use(function(req, res, next) {
@@ -22,22 +26,21 @@ var port = process.env.PORT || 3000;
 // but feel free to use whatever libs or frameworks you'd like through `package.json`.
 
 // http://expressjs.com/en/starter/static-files.html
-app.use(express.static('public'));
+//app.use(express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
-app.get('/', function(request, response) {
-  response.send('Hello Express');
-});
+app.route('/')
+    .get(function(req, res) {
+		  res.sendFile(process.cwd() + '/views/index.html');
+})
 
-app.get('/now', function(req, res, next) {
-req.time = new Date().toString(); // Hypothetical synchronous operation
-next();
-}, function(req, res) {
-res.send({time: req.time});
-});
+app.use(express.static(__dirname + "/public"));
 
 
-// listen for requests :)
-const listener = app.listen(port, function() {
-  console.log('Your app is listening on port ' + port);
+
+var port = process.env.PORT || 3000;
+bGround.setupBackgroundApp(app, myApp, __dirname).listen(port, function(){
+  bGround.log('Node is listening on port '+ port + '...')
 });
+
+
