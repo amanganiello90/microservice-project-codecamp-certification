@@ -1,11 +1,10 @@
 
 var express = require('express');
 var app = express();
+var bodyParser= require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }))
 
-// --> 7)  Mount the Logger middleware here
-
-
-// --> 11)  Mount the body-parser middleware  here
+/
 
 
 /** 1) Meet the node console. */
@@ -39,12 +38,22 @@ res.send({time: req.time});
 });
 
 
-
 /** 9)  Get input from client - Route parameters */
+
+app.get("/:word/echo", function(req, res) {
+  var word = req.params.word;
+  res.send({echo: word});
+});
 
 
 /** 10) Get input from client - Query parameters */
 // /name?first=<firstname>&last=<lastname>
+
+ app.get("/name", function(req, res) {
+   var firstName = req.query.first;
+   var lastName = req.query.last;
+   res.send({ name: firstName+' '+lastName});
+ });
 
   
 /** 11) Get ready for POST Requests - the `body-parser` */
@@ -52,6 +61,12 @@ res.send({time: req.time});
 
 
 /** 12) Get data form POST  */
+
+app.post('/name', function(req, res) {
+  var firstName = req.body.first;
+  var lastName = req.body.last;
+  res.send({ name: firstName+' '+lastName});
+});
 
 
 
