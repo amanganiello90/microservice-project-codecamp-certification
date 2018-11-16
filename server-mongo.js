@@ -90,6 +90,7 @@ router.get('/create-and-save-person', function(req, res, next) {
        if(err) { return (next(err)); }
        res.json(pers);
        pers.remove();
+       
      });
   });
 });

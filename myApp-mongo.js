@@ -47,9 +47,16 @@ mongoose.connect(mongouri);
 // fields, use simple validators like `required` or `unique`, and set
 // `default` values. See the [mongoose docs](http://mongoosejs.com/docs/guide.html).
 
-// <Your code here >
 
-var Person /* = <Your Model> */
+var Person = mongoose.model('Person', new Schema({
+ name: {
+    type: String,
+    required: true
+  },
+  age :  Number,
+  favoriteFoods : [String]
+
+}));
 
 // **Note**: GoMix is a real server, and in real servers interactions with
 // the db are placed in handler functions, to be called when some event happens
@@ -86,11 +93,25 @@ var Person /* = <Your Model> */
 //    ...do your stuff here...
 // });
 
+
+
 var createAndSavePerson = function(done) {
-  
-  done(null /*, data*/);
+  var person = new Person({ name: 'John', age: 11 });
+  person.save(function(err, data) {
+
+done(err,data);
+});
 
 };
+
+var done= function(err,data){
+  
+  if (err) 
+  throw err;
+  
+  
+}
+
 
 /** 4) Create many People with `Model.create()` */
 
@@ -101,9 +122,13 @@ var createAndSavePerson = function(done) {
 // Create many people using `Model.create()`, using the function argument
 // 'arrayOfPeople'.
 
-var createManyPeople = function(arrayOfPeople, done) {
+var createManyPeople = function(arrayOfPerson, done) {
+    //arrayOfPerson=[{ name: 'John', age: 11 },{  name: 'John'}];
+  Person.create(arrayOfPerson, function (err, data) {
+ done(err,data);
+  // saved!
+});
     
-    done(null/*, data*/);
     
 };
 
@@ -119,8 +144,10 @@ var createManyPeople = function(arrayOfPeople, done) {
 // Use the function argument `personName` as search key.
 
 var findPeopleByName = function(personName, done) {
-  
-  done(null/*, data*/);
+ Person.find({name:personName}, function (err, data) {
+ done(err,data);
+  // saved!
+});
 
 };
 
@@ -135,7 +162,10 @@ var findPeopleByName = function(personName, done) {
 
 var findOneByFood = function(food, done) {
 
-  done(null/*, data*/);
+ Person.findOne({favoriteFoods :food}, function (err, data) {
+ done(err,data);
+  // saved!
+});
   
 };
 
@@ -150,7 +180,10 @@ var findOneByFood = function(food, done) {
 
 var findPersonById = function(personId, done) {
   
-  done(null/*, data*/);
+  Person.findById({_id:personId}, function (err, data) {
+ done(err,data);
+  // saved!
+});
   
 };
 
@@ -179,10 +212,19 @@ var findPersonById = function(personId, done) {
 // manually mark it as edited using `document.markModified('edited-field')`
 // (http://mongoosejs.com/docs/schematypes.html - #Mixed )
 
+
 var findEditThenSave = function(personId, done) {
-  var foodToAdd = 'hamburger';
   
-  done(null/*, data*/);
+  Person.findById({_id:personId}, function (err, data) {
+    var foodToAdd = 'hamburger';
+    data.favoriteFoods.push(foodToAdd);
+    console.log(data);
+    var person = new Person(data);
+  person.save(function(err, data) {
+
+done(err,data);
+});
+});
 };
 
 /** 9) New Update : Use `findOneAndUpdate()` */
@@ -201,9 +243,13 @@ var findEditThenSave = function(personId, done) {
 // passes the unmodified object to its callback.
 
 var findAndUpdate = function(personName, done) {
-  var ageToSet = 20;
+  
+var ageToSet = 20;
+  Person.findOneAndUpdate({name:personName}, {age: ageToSet } ,{ new: true },function (err, data) {
+    console.log(data);
+done(err,data);
+});
 
-  done(null/*, data*/);
 };
 
 /** # CRU[D] part IV - DELETE #
@@ -218,7 +264,10 @@ var findAndUpdate = function(personName, done) {
 
 var removeById = function(personId, done) {
   
-  done(null/*, data*/);
+  Person.findByIdAndRemove({_id:personId},function (err, data) {
+    console.log(data);
+done(err,data);
+});
     
 };
 
@@ -235,7 +284,10 @@ var removeById = function(personId, done) {
 var removeManyPeople = function(done) {
   var nameToRemove = "Mary";
 
-  done(null/*, data*/);
+  Person.remove({name:nameToRemove }, function (err, data) {
+ done(err,data);
+  // saved!
+});
 };
 
 /** # C[R]UD part V -  More about Queries # 
@@ -258,8 +310,10 @@ var removeManyPeople = function(done) {
 
 var queryChain = function(done) {
   var foodToSearch = "burrito";
-  
-  done(null/*, data*/);
+  Person.find({favoriteFoods :foodToSearch}).sort({name: 1}).limit(2).select({age:0}).exec(function(err, docs) {
+    done(err,docs);
+//do something here
+})
 };
 
 /** **Well Done !!**
